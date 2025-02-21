@@ -13,7 +13,7 @@ namespace Character
 
         private void OnInteract()
         {
-            Debug.Log("Interact");
+            //Debug.Log("Interact");
             Interaction();
         }
         private void Interaction()
@@ -31,7 +31,7 @@ namespace Character
                 {
                     if(hit.transform.TryGetComponent(out IInteractable interactable))
                     {
-                        Debug.Log("TakeObject");
+                        //Debug.Log("TakeObject");
                         hit.transform.GetComponent<IInteractable>().Take(_anchorItem);
                         _isCarrying = true;
                     }
@@ -42,7 +42,7 @@ namespace Character
                 }
                 else
                 {
-                    Debug.Log("No object in range");
+                    //Debug.Log("No object in range");
                 }
             }
         }

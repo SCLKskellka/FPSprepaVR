@@ -1,15 +1,25 @@
 using System;
+using Manager;
 using UnityEngine;
 
 namespace Riddle
 {
+    public enum ColorCaptor
+    {
+        Red,
+        Green,
+        Blue
+    }
     public class StayContactCaptor : MonoBehaviour
     {
-        [SerializeField] private GameObject _door;
+        [SerializeField] private string _riddleID;
         [SerializeField] private Material _complete;
         [SerializeField] private Material _uncomplete;
         [SerializeField] private float _timerValue;
         [SerializeField] private bool _isRiversed;
+        [SerializeField] private bool _isColorCaptor;
+        [SerializeField] private ColorCaptor _colorCaptor;
+        
 
         private Renderer _myRenderer;
         private float _currentTime;
@@ -21,7 +31,10 @@ namespace Riddle
         }
         private void Start()
         {
-            _myRenderer.material = _uncomplete;
+            if(_isColorCaptor == false)
+            {
+                _myRenderer.material = _uncomplete;
+            }
             _isTimerStarted = false;
             _currentTime = _timerValue;
         }
@@ -32,40 +45,136 @@ namespace Riddle
             if (_currentTime <= 0)
             {
                 _isTimerStarted = false;
-                RiddleComplete();
+                if (_isColorCaptor)
+                {
+                    RiddleColorComplete();
+                }
+                else
+                {
+                    RiddleComplete();
+                }
             }
         }
         private void OnCollisionEnter(Collision other)
         {
-            if(other.transform.CompareTag("Puzzle") && _isRiversed == false)
+            if (_isColorCaptor)
             {
-                ResetRiddle();
+                switch (_colorCaptor)
+                {
+                    case ColorCaptor.Red:
+                        if(other.transform.CompareTag("RedPuzzle") && _isRiversed == false)
+                        {
+                            ResetColorRiddle();
+                        }
+                        if(other.transform.CompareTag("RedPuzzle") && _isRiversed)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        break;
+                    case ColorCaptor.Green:
+                        if(other.transform.CompareTag("GreenPuzzle") && _isRiversed == false)
+                        {
+                            ResetColorRiddle();
+                        }
+                        if(other.transform.CompareTag("GreenPuzzle") && _isRiversed)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        break;
+                    case ColorCaptor.Blue:
+                        if(other.transform.CompareTag("BluePuzzle") && _isRiversed == false)
+                        {
+                            ResetColorRiddle();
+                        }
+                        if(other.transform.CompareTag("BluePuzzle") && _isRiversed)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        break;
+                }
             }
-            if(other.transform.CompareTag("Puzzle") && _isRiversed)
+            else
             {
-                _isTimerStarted = true;
+                if(other.transform.CompareTag("Puzzle") && _isRiversed == false)
+                {
+                    ResetRiddle();
+                }
+                if(other.transform.CompareTag("Puzzle") && _isRiversed)
+                {
+                    _isTimerStarted = true;
+                }
             }
         }
         private void OnCollisionExit(Collision other)
         {
-            if(other.transform.CompareTag("Puzzle") && _isRiversed == false)
+            if (_isColorCaptor)
             {
-                _isTimerStarted = true;
+                switch (_colorCaptor)
+                {
+                    case ColorCaptor.Red:
+                        if(other.transform.CompareTag("RedPuzzle") && _isRiversed == false)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        if(other.transform.CompareTag("RedPuzzle") && _isRiversed)
+                        {
+                            ResetColorRiddle();
+                        }
+                        break;
+                    case ColorCaptor.Green:
+                        if(other.transform.CompareTag("GreenPuzzle") && _isRiversed == false)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        if(other.transform.CompareTag("GreenPuzzle") && _isRiversed)
+                        {
+                            ResetColorRiddle();
+                        }
+                        break;
+                    case ColorCaptor.Blue:
+                        if(other.transform.CompareTag("BluePuzzle") && _isRiversed == false)
+                        {
+                            _isTimerStarted = true;
+                        }
+                        if(other.transform.CompareTag("BluePuzzle") && _isRiversed)
+                        {
+                            ResetColorRiddle();
+                        }
+                        break;
+                }
             }
-            if(other.transform.CompareTag("Puzzle") && _isRiversed)
+            else
             {
-                ResetRiddle();
+                if(other.transform.CompareTag("Puzzle") && _isRiversed == false)
+                {
+                    _isTimerStarted = true;
+                }
+                if(other.transform.CompareTag("Puzzle") && _isRiversed)
+                {
+                    ResetRiddle();
+                }
             }
+           
         }
         private void RiddleComplete()
         {
-            _door.SetActive(false);
+            GameEventManager.OnRiddleComplete.Invoke(_riddleID);
             _myRenderer.material = _complete;
+        }
+        private void RiddleColorComplete()
+        {
+            GameEventManager.OnColorRiddleComplete.Invoke(_riddleID);
         }
         private void ResetRiddle()
         {
-            _door.SetActive(true);
+            GameEventManager.OnRiddleReset.Invoke(_riddleID);
             _myRenderer.material = _uncomplete;
+            _isTimerStarted = false;
+            _currentTime = _timerValue;
+        }
+        private void ResetColorRiddle()
+        {
+            GameEventManager.OnColorRiddleReset.Invoke(_riddleID);
             _isTimerStarted = false;
             _currentTime = _timerValue;
         }
