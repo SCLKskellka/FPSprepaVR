@@ -60,11 +60,12 @@ namespace Props
                 _collider.enabled = true;
             }
         }
-        private void ColorReset(string riddleID)
+        private void ColorReset(string riddleID, bool isCompleted)
         {
             if(riddleID == _riddleID)
             {
-                _colorCaptorComplete -= 1;
+                if(isCompleted)
+                    _colorCaptorComplete -= 1;
                 if (_colorCaptorComplete != _colorCaptorNeeds)
                 {
                     _meshRenderer.enabled = true;

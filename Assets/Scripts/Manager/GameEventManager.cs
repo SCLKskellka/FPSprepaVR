@@ -8,6 +8,6 @@ namespace Manager
         public static Action<string> OnRiddleComplete;
         public static Action<string> OnColorRiddleComplete;
         public static Action<string> OnRiddleReset;
-        public static Action<string> OnColorRiddleReset;
+        public static Action<string,bool> OnColorRiddleReset;
     }
 }
